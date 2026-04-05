@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Examination Details</title>
+    <style>
+        body { font-family: Arial; margin: 0; background: #f4f4f4; }
+        .container { width: 80%; margin: 30px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px gray; }
+        h2 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        table, th, td { border: 1px solid #ccc; }
+        th { background: #2604e7; color: white; padding: 10px; }
+        td { text-align: center; padding: 10px; }
+        .result-box { margin-top: 20px; padding: 15px; background: #eef; border-radius: 10px; text-align: center; font-size: 18px; }
+        .btn { display: block; width: 200px; margin: 20px auto; padding: 10px; background: #2604e7; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: black; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 id="studentHeading">Examination Details</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Marks</th>
+            </tr>
+        </thead>
+        <tbody id="examTableBody">
+            </tbody>
+    </table>
+
+    <div class="result-box" id="resultBox">
+        </div>
+
+    <button class="btn" onclick="goBack()">Back to Dashboard</button>
+</div>
+
+<script>
+    async function loadExamResults() {
+        // localStorage nundi login ayina student ID teesukuntundi
+        const studentId = localStorage.getItem("studentId") || "24B11DS041"; 
+
+        try {
+            const response = await fetch(`/api/exam-results/${studentId}`);
+            const data = await response.json();
+
+            if (data.error) {
+                document.getElementById('resultBox').innerHTML = "<p>Results not yet updated.</p>";
+                return;
+            }
+
+            // Table Rows generate cheyadam
+            const tableBody = document.getElementById('examTableBody');
+            tableBody.innerHTML = "";
+            data.subjects.forEach(sub => {
+                tableBody.innerHTML += `<tr><td>${sub.name}</td><td>${sub.marks}</td></tr>`;
+            });
+
+            // Summary update
+            document.getElementById('resultBox').innerHTML = `
+                <p><b>Total Marks:</b> ${data.totalMarks}</p>
+                <p><b>Percentage:</b> ${data.percentage}%</p>
+                <p><b>Result:</b> <span style="color:${data.result === 'Pass' ? 'green' : 'red'}">${data.result}</span></p>
+            `;
+
+        } catch (err) {
+            console.error("Error loading results:", err);
+        }
+    }
+
+    window.onload = loadExamResults;
+
+    function goBack() {
+        window.location.href = "studentdashboard.html";
+    }
+</script>
+</body>
+</html>

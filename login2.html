@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f') no-repeat center;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0px 0px 15px black;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            background: #2604e7;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: black;
+        }
+
+        .input-box {
+            margin: 10px 0;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <!-- STEP 1: Choose Role -->
+    <div id="roleSelection">
+        <h2>Select Login Type</h2>
+        <button class="btn" onclick="showLogin('admin')">Admin Login</button>
+        <button class="btn" onclick="showLogin('student')">Student Login</button>
+    </div>
+
+    <!-- STEP 2: Login Form -->
+    <div id="loginForm" class="hidden">
+        <h2 id="title"></h2>
+
+        <div class="input-box">
+            <input type="text" id="username" placeholder="Username / Roll No">
+        </div>
+
+        <div class="input-box">
+            <input type="password" id="password" placeholder="Password">
+        </div>
+
+        <button class="btn" onclick="login()">Login</button>
+        <button class="btn" onclick="goBack()">Back</button>
+    </div>
+
+</div>
+
+<script>
+let role = "";
+
+function showLogin(selectedRole) {
+    role = selectedRole;
+
+    document.getElementById("roleSelection").classList.add("hidden");
+    document.getElementById("loginForm").classList.remove("hidden");
+
+    document.getElementById("title").innerText =
+        selectedRole === "admin" ? "Admin Login" : "Student Login";
+}
+
+function goBack() {
+    document.getElementById("roleSelection").classList.remove("hidden");
+    document.getElementById("loginForm").classList.add("hidden");
+}
+
+async function login() {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+
+    if (role === "admin") {
+        // Admin logic (Static ga unchavachhu leda backend ki pampochu)
+        if (username === "admin" && password === "1234") {
+            alert("Admin Login Success");
+            window.location.href = "dashboard.html"; // Admin Dashboard
+        } else {
+            alert("Invalid Admin Credentials");
+        }
+    } else {
+        // Student logic - Backend API call
+        try {
+            const response = await fetch('/api/login-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ studentId: username, password: password })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // MUKHYAM: Student ID ni save chestunnam
+                localStorage.setItem("studentId", username); 
+                alert("Student Login Success!");
+                window.location.href = "studentdashboard.html"; 
+            } else {
+                alert(data.message || "Invalid Student Credentials");
+            }
+        } catch (err) {
+            console.error("Login Error:", err);
+            alert("Server connection error!");
+        }
+    }
+}
+</script>
+
+</body>
+</html>

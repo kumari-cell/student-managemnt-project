@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Details</title>
+    <style>
+        body { font-family: Arial; margin: 0; background: #f4f4f4; }
+        .container { width: 80%; margin: 30px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px gray; }
+        h2 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        table, th, td { border: 1px solid #ccc; }
+        th { background: #2604e7; color: white; padding: 10px; }
+        td { text-align: center; padding: 10px; }
+        .summary { margin-top: 20px; padding: 15px; background: #eef; border-radius: 10px; text-align: center; font-size: 18px; }
+        .btn { display: block; width: 200px; margin: 20px auto; padding: 10px; background: #2604e7; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: black; }
+        .good { color: green; font-weight: bold; }
+        .low { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 id="studentHeading">Attendance Details</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Subject/Course</th>
+                <th>Total Classes</th>
+                <th>Attended</th>
+                <th>Percentage</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="attendanceTableBody">
+            </tbody>
+    </table>
+
+    <div class="summary" id="summaryBox">
+        </div>
+
+    <button class="btn" onclick="goBack()">Back to Dashboard</button>
+</div>
+
+<script>
+    async function fetchAttendance() {
+        // Login ayyaka meeru localStorage lo studentId save chesukoni undali
+        // Lekapothe temporary ga oka ID ivvandi test kosam
+        const studentId = localStorage.getItem("studentId") || "24B11DS041"; 
+
+        try {
+            const response = await fetch(`/api/student-details/${studentId}`);
+            const data = await response.json();
+
+            if (data.error) {
+                alert("Data dorakaledu!");
+                return;
+            }
+
+            const att = data.attendance;
+            const stu = data.student;
+
+            document.getElementById('studentHeading').innerText = `Attendance for ${stu.name}`;
+
+            // Percentage Calculation
+            let percentage = 0;
+            if(att.totalClasses > 0) {
+                percentage = ((att.attended / att.totalClasses) * 100).toFixed(2);
+            }
+
+            let statusClass = percentage >= 75 ? "good" : "low";
+            let statusText = percentage >= 75 ? "Good" : "Shortage";
+
+            // Table update
+            const tableBody = document.getElementById('attendanceTableBody');
+            tableBody.innerHTML = `
+                <tr>
+                    <td>Overall Curriculum</td>
+                    <td>${att.totalClasses}</td>
+                    <td>${att.attended}</td>
+                    <td>${percentage}%</td>
+                    <td class="${statusClass}">${statusText}</td>
+                </tr>
+            `;
+
+            // Summary update
+            document.getElementById('summaryBox').innerHTML = `
+                <p><b>Overall Attendance:</b> ${percentage}%</p>
+                <p><b>Status:</b> <span class="${statusClass}">${statusText}</span></p>
+            `;
+
+        } catch (err) {
+            console.error("Error fetching attendance:", err);
+        }
+    }
+
+    // Page load avvagane data ravali
+    window.onload = fetchAttendance;
+
+    function goBack() {
+        window.location.href = "studentdashboard.html";
+    }
+</script>
+
+</body>
+</html>

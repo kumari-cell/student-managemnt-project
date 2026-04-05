@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Management Dashboard</title>
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #343a40;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: rgb(247, 246, 246);
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .card-box {
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar">
+            <h4 class="text-center text-white">Admin Panel</h4>
+            <hr class="text-white">
+            <a href="#">Dashboard</a>
+            <a href="addstudentpage.html">Add Student</a>
+            <a href="viewstudent.html">View Students</a>
+            <a href="navigationbar.html">Logout</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 p-4">
+
+            <h2 class="mb-4">Student Management Dashboard</h2>
+
+            <!-- Cards Section -->
+            <div class="row">
+
+                <div class="col-md-4">
+                    <div class="card text-white bg-primary card-box">
+                        <div class="card-body text-center">
+                            <h5>Total Students</h5>
+                            <h2>500</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card text-white bg-success card-box">
+                        <div class="card-body text-center">
+                            <h5>Total Courses</h5>
+                            <h2>8</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card text-white bg-warning card-box">
+                        <div class="card-body text-center">
+                            <h5>New Admissions</h5>
+                            <h2>20</h2>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Student Table -->
+            <div class="card mt-4">
+                <div class="card-header bg-dark text-white">
+                    Recent Students
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Course</th>
+                                <th>phone.no</th>
+                                <th>Gender</th>
+                                <th>address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Main</td>
+                                <td>mani@gmail.com</td>
+                                <td>CSE</td>
+                                <td>7989825290</td>
+                                <th>Male</th>
+                                <th>kothipilli</th>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>kasi</td>
+                                <td>kasi@gmail.com</td>
+                                <td>ECE</td>
+                                <td>7989034458</td>
+                                <th>Male</th>
+                                <th>jagannadhagiri</th> 
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Krishna</td>
+                                <td>krishna@gmail.com</td>
+                                <td>MECH</td>
+                                <td>7952749227</td>
+                                <th>Male</th>
+                                <th>undru</th>
+                            </tr>
+                                 <tr>
+                                <td>4</td>
+                                <td>Satish</td>
+                                <td>satish16@gmail.com</td>
+                                <td>DS</td>
+                                <td>8607757962</td>
+                                <th>Male</th>
+                                <th>gollapalam</th>
+                            </tr>
+                              </tr>
+                                 <tr>
+                                <td>5</td>
+                                <td>nissy</td>
+                                <td>nissy16@gmail.com</td>
+                                <td>AI</td>
+                                <td>7584525526</td>
+                                <th>Female</th>
+                                <th>yanam </th>
+                            </tr>
+                                  </tr>
+                                 <tr>
+                                <td>6</td>
+                                <td>akkasha</td>
+                                <td>akasha16@gmail.com</td>
+                                <td>EEE</td>
+                                <td>6307521498</td>
+                                <th>Female</th>
+                                <th>mandhapeta</th>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>hansi</td>
+                                <td>hansi31@gmail.com</td>
+                                <td>DS</td>
+                                <td>2344822150</td>
+                                <th>Female</th>
+                                <th>kakinada</th>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

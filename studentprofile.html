@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profile</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7fe; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .profile-card { background: white; width: 400px; padding: 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); text-align: center; }
+        .profile-card h2 { color: #2604e7; margin-bottom: 20px; border-bottom: 2px solid #f4f7fe; padding-bottom: 10px; }
+        .info-group { text-align: left; margin-bottom: 15px; }
+        .info-group label { font-weight: bold; color: #555; display: block; font-size: 14px; }
+        .info-group p { background: #f9f9f9; padding: 10px; border-radius: 5px; border: 1px solid #eee; margin: 5px 0; color: #333; }
+        .btn-container { margin-top: 20px; display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-back { background: #2604e7; color: white; }
+        .btn-logout { background: #ff4757; color: white; }
+        .profile-img { width: 100px; height: 100px; background: #eee; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: #ccc; }
+    </style>
+</head>
+<body>
+
+<div class="profile-card">
+    <div class="profile-img">👤</div>
+    <h2>My Profile</h2>
+
+    <div id="profileData">
+        <div class="info-group">
+            <label>Full Name</label>
+            <p id="profName">Loading...</p>
+        </div>
+        <div class="info-group">
+            <label>Roll Number</label>
+            <p id="profId">Loading...</p>
+        </div>
+        <div class="info-group">
+            <label>Email Address</label>
+            <p id="profEmail">Loading...</p>
+        </div>
+        <div class="info-group">
+            <label>Course / Dept</label>
+            <p id="profCourse">Loading...</p>
+        </div>
+        <div class="info-group">
+            <label>Phone Number</label>
+            <p id="profPhone">Loading...</p>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <button class="btn btn-back" onclick="location.href='studentdashboard.html'">Dashboard</button>
+        <button class="btn btn-logout" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<script>
+    async function fetchProfile() {
+        // Login ayinappudu save chesina ID ni teeskuntundi
+        const studentId = localStorage.getItem("studentId");
+
+        if (!studentId) {
+            alert("Session expired. Please login again.");
+            window.location.href = "login2.html";
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/student-details/${studentId}`);
+            const data = await response.json();
+
+            if (data.student) {
+                const s = data.student;
+                document.getElementById('profName').innerText = s.name;
+                document.getElementById('profId').innerText = s.studentId;
+                document.getElementById('profEmail').innerText = s.email;
+                document.getElementById('profCourse').innerText = s.course;
+                document.getElementById('profPhone').innerText = s.phone || "Not Provided";
+            } else {
+                alert("Profile not found!");
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Error loading profile data.");
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("studentId");
+        window.location.href = "login2.html";
+    }
+
+    // Page load avvagane profile fetch cheyyali
+    window.onload = fetchProfile;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Students - Student Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f9; }
+        .card { border-radius: 10px; }
+        .table th, .table td { vertical-align: middle; }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white text-center">
+            <h4>Student List</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search Student by Name or ID">
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Gender</th>
+                            <th>Course</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTable">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Data ni Fetch chese function
+    async function loadStudents() {
+        try {
+            const response = await fetch('/api/get-students'); // Backend API call
+            const students = await response.json();
+            const tableBody = document.getElementById('studentTable');
+            
+            tableBody.innerHTML = ""; // Patha data ni clear cheyali
+
+            students.forEach(student => {
+                const row = `
+                    <tr>
+                        <td>${student.studentId}</td>
+                        <td>${student.name}</td>
+                        <td>${student.email}</td>
+                        <td>${student.phone}</td>
+                        <td>${student.gender}</td>
+                        <td>${student.course}</td>
+                        <td>${student.address || 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteStudent('${student._id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        } catch (err) {
+            console.error("Error fetching students:", err);
+        }
+    }
+
+    // Page open avvagane data load avvali
+    window.onload = loadStudents;
+
+    // Search Logic (Optional)
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        let filter = this.value.toUpperCase();
+        let rows = document.querySelector("#studentTable").rows;
+        for (let i = 0; i < rows.length; i++) {
+            let firstCol = rows[i].cells[0].textContent.toUpperCase();
+            let secondCol = rows[i].cells[1].textContent.toUpperCase();
+            if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }      
+        }
+    });
+// 2. Student ని Delete chese function
+async function deleteStudent(id) {
+    if (confirm("Are you sure you want to delete this student?")) {
+        try {
+            const response = await fetch(`/api/delete-student/${id}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Student deleted successfully!");
+                loadStudents(); // Table ni reload chestundi
+            } else {
+                alert("Error: " + result.message);
+            }
+        } catch (err) {
+            console.error("Delete Error:", err);
+            alert("Server error while deleting.");
+        }
+    }
+}
+</script>
+
+</body>
+</html>

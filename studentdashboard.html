@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        /* Mee existing CSS styling ikkada untundi */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { display: flex; background-color: #f4f7fe; height: 100vh; }
+        .sidebar { width: 250px; background: #2604e7; color: white; padding: 20px; }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 22px; }
+        .sidebar ul { list-style: none; }
+        .sidebar ul li { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+        .sidebar ul li:hover { background: rgba(255,255,255,0.2); }
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .card h3 { color: #555; font-size: 16px; }
+        .card p { font-size: 24px; font-weight: bold; color: #2604e7; margin-top: 10px; }
+        .result-table { width: 100%; background: white; border-collapse: collapse; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .result-table th, .result-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .result-table th { background-color: #f8f9fa; color: #333; }
+        .logout-btn { background: #ff4757; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Student Portal</h2>
+        <ul>
+            <li onclick="location.href='studentdashboard.html'">Dashboard</li>
+            <li>My Profile</li>
+            <li onclick="location.href='examresult.html'">Examination</li>
+            <li onclick="location.href='attendance.html'">Attendance</li>
+            <li onclick="location.href='fee.html'">Fees Details</li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h2 id="welcomeText">Welcome, Student!</h2>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Attendance</h3>
+                <p id="attDisplay">0%</p>
+            </div>
+            <div class="card">
+                <h3>Fee Status</h3>
+                <p id="feeStatus">Loading...</p>
+            </div>
+            <div class="card">
+                <h3>Current Course</h3>
+                <p id="courseName">-</p>
+            </div>
+        </div>
+
+        <h3>Recent Exam Results</h3>
+        <br>
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Max Marks</th>
+                    <th>Obtained Marks</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="examSummaryBody">
+                </tbody>
+        </table>
+    </div>
+
+<script>
+    async function loadDashboard() {
+        const studentId = localStorage.getItem("studentId");
+        
+        if (!studentId) {
+            alert("Please login first!");
+            window.location.href = "login2.html";
+            return;
+        }
+
+        try {
+            // Student details, Attendance, mariyu Fees okasare techukuntunnam
+            const response = await fetch(`/api/student-details/${studentId}`);
+            const data = await response.json();
+
+            if(data.student) {
+                document.getElementById('welcomeText').innerText = `Welcome, ${data.student.name}!`;
+                document.getElementById('courseName').innerText = data.student.course;
+            }
+
+            if(data.attendance) {
+                let percent = ((data.attendance.attended / data.attendance.totalClasses) * 100).toFixed(1);
+                document.getElementById('attDisplay').innerText = isNaN(percent) ? "0%" : percent + "%";
+            }
+
+            if(data.fees) {
+                let due = data.fees.totalFee - data.fees.paidAmount;
+                document.getElementById('feeStatus').innerText = due <= 0 ? "Paid" : "Due: ₹" + due;
+                document.getElementById('feeStatus').style.color = due <= 0 ? "green" : "red";
+            }
+
+            // Exam results Summary fetch
+            const examRes = await fetch(`/api/exam-results/${studentId}`);
+            const examData = await examRes.json();
+            const tableBody = document.getElementById('examSummaryBody');
+            
+            if(!examData.error) {
+                tableBody.innerHTML = examData.subjects.slice(0, 3).map(sub => `
+                    <tr>
+                        <td>${sub.name}</td>
+                        <td>100</td>
+                        <td>${sub.marks}</td>
+                        <td style="color: ${sub.marks >= 35 ? 'green' : 'red'}; font-weight: bold;">
+                            ${sub.marks >= 35 ? 'Pass' : 'Fail'}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+        } catch (err) {
+            console.error("Dashboard error:", err);
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("studentId");
+        window.location.href = "login2.html";
+    }
+
+    window.onload = loadDashboard;
+</script>
+
+</body>
+</html>
